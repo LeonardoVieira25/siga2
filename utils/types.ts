@@ -12,6 +12,7 @@ export type Disciplina = {
     nota: string;
     situacao: string;
     turma: string;
+    tipoCalc: string;
 }
 
 export type SessionCredentials = {

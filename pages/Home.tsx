@@ -9,8 +9,34 @@ import { useNavigation } from "@react-navigation/native";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { RefreshControl, ScrollView } from "react-native-gesture-handler";
 
+
+function getNotaPercentual(disciplina: Disciplina) {
+  const tipoCalc = disciplina.tipoCalc;
+  if (tipoCalc === "Média Aritmética") {
+    let total = 0;
+    disciplina.avaliacoes.forEach((avaliacao) => {
+      total += Number(avaliacao.nota);
+    });
+    return total / (disciplina.avaliacoes.length > 0 ? disciplina.avaliacoes.length : 1);
+  }
+  if (tipoCalc === "Média Ponderada") {
+    let total = 0;
+    let totalPeso = 0;
+    disciplina.avaliacoes.forEach((avaliacao) => {
+      total += Number(avaliacao.nota) * Number(avaliacao.peso);
+      totalPeso += Number(avaliacao.peso);
+    });
+    return total / (totalPeso > 0 ? totalPeso : 1);
+  }
+  console.log("tipoCalc")
+  console.log(tipoCalc)
+  return null;
+}
+
+
 const BlocoDisciplina = ({ disciplina }: { disciplina: Disciplina }) => {
   const { colors } = useTheme();
+  console.log(disciplina);
   return (
     <View
       style={{
@@ -43,21 +69,22 @@ const BlocoDisciplina = ({ disciplina }: { disciplina: Disciplina }) => {
           >
             <Text variant="labelSmall">{disciplina.turma}</Text>
             <Text variant="labelSmall">{disciplina.codDisciplina}</Text>
+            <Text variant="labelSmall">{disciplina.tipoCalc}</Text>
           </View>
         </View>
         <View>
           <AnimatedCircularProgress
             size={60}
             width={5}
-            fill={Number(disciplina.nota)}
+            fill={getNotaPercentual(disciplina) ?? 0}
             backgroundColor={colors.elevation.level4}
             tintColor={colors.primary}
             onAnimationComplete={() => console.log("onAnimationComplete")}
           >
             {() => (
               <Text variant="labelLarge">
-                {disciplina.nota}
-                {disciplina.nota != "" ? "%" : "N/A"}
+                {getNotaPercentual(disciplina)}
+                {getNotaPercentual(disciplina) ? "%" : "N/A"}
               </Text>
             )}
           </AnimatedCircularProgress>

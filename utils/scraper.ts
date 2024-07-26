@@ -134,26 +134,26 @@ async function getDataPage(cpf: string, senhaHash: string) {
         })
 
     }
-    console.log('response');
-    // if (!estaLogado(responseText)) {
-    //     await authenticate(cpf, senhaHash);
-    // }
-    const responseText = await response.data;
+    const responseText = await response?.data;
     return responseText;
 }
 
 function estaLogado(pageText: string) {
     return !pageText.includes("rio fazer login para acessar a aplica");
 }
-
-
-
+function extractDisciplinaCalcMethod(htmlSnippet: string, codigo: string): string | null {
+    const regex = new RegExp(`${codigo}\\(A\\) - [^<]+<\\/span>[\\s\\S]*?Tipo de cálculo utilizado: <b>([^<]+)<\\/b>`);
+    const match = regex.exec(htmlSnippet);
+    if (match) {
+        return match[1];
+    }
+    return null;
+}
 function getPageData(htmlPage: string): Disciplina[] {
     const avaliacoes: any[] = [];
     const disciplinasPattern = /gridMatriculas\.setData\((.*?)\);/s;
     const notasPattern = /gridNotas\d+\.setData\(\s*(\[[^;]+)\);/g;
     let match: RegExpExecArray | null;
-
     while ((match = notasPattern.exec(htmlPage))) {
         let resultado = match[1].replace(/\n/g, '');
         resultado = resultado.replace(/(\d+),(\d+)/g, '$1.$2');
@@ -184,6 +184,12 @@ function getPageData(htmlPage: string): Disciplina[] {
     }
 
     disciplinas.forEach((disciplina, index) => {
+        const disciplinaCalcMethod = extractDisciplinaCalcMethod(htmlPage, disciplina.codDisciplina);
+        if (disciplinaCalcMethod) {
+            console.log("disciplinaCalcMethod");
+            console.log(disciplinaCalcMethod);
+            disciplina.tipoCalc = disciplinaCalcMethod;
+        }
         disciplina.avaliacoes = avaliacoes[index];
     });
 
@@ -215,14 +221,8 @@ export default async function GetData(cpf: string, senhaHash: string) {
 
     return new Promise((resolve, reject) => {
         console.log('scraper');
-        // getDataPage(cpf, senhaHash).then((response) => {
         getDataPage(cpf, senhaHash).then((response) => {
             console.log('usuario logado');
-
-            // const materiasString = response.split("gridMatriculas.setData(")[1].split(");")[0]
-            // console.log(materiasString)
-            // const materias = JSON.parse(materiasString);
-
             resolve(getPageData(response));
         }).catch(err => {
             reject(err);
