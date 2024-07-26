@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { View } from "react-native";
 import { ActivityIndicator, Text, useTheme } from "react-native-paper";
 import session from "../utils/sessionManager";
+import GetData from "../utils/scraper";
 
 export default function LoadingScreen({
   setState,
@@ -12,7 +13,8 @@ export default function LoadingScreen({
     session
       .getSessionCredentials()
       .then((sessionCredentials) =>
-        session.login(sessionCredentials.cpf, sessionCredentials.passwordHash)
+        // session.login(sessionCredentials.cpf, sessionCredentials.passwordHash)
+        GetData(sessionCredentials.cpf, sessionCredentials.passwordHash)
       )
       .then(() => {
         setState("logged");

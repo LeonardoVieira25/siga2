@@ -19,6 +19,7 @@ export default function Login({
 
   const handleLogin = () => {
     setLocalState("loading");
+    console.log("Logging in");
     session
       .login(cpf, senha)
       .then(() => {
@@ -63,7 +64,7 @@ export default function Login({
           gap: 5,
         }}
       >
-        <Text variant="bodyMedium">Faça login com a sua conta do siga:</Text>
+        <Text variant="bodyMedium">Faça login com a sua conta do siga: teste</Text>
         <TextInput
           label="cpf"
           mode="outlined"
@@ -73,7 +74,7 @@ export default function Login({
         <TextInput
           label="Senha"
           mode="outlined"
-          value={senha.replace(/./g, "*")}
+          secureTextEntry={true}
           onChange={(e) => setSenha(e.nativeEvent.text)}
         />
         <Button

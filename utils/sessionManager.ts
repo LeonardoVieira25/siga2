@@ -35,16 +35,21 @@ class Session {
         return new Promise<void>(async (resolve, reject) => {
             generateHashMd5(password)
                 .then((passwordHash) => {
+                    console.log("passwordHash");
+                    console.log(passwordHash);
+                    AsyncStorage.setItem('cpf', cpf);
+                    AsyncStorage.setItem('passwordHash', passwordHash);
                     GetData(cpf, passwordHash).then((data) => {
                         console.log(data);
                         return this.setSessionCredentials(cpf, passwordHash);
                     }).then(() => {
                         resolve()
                     }).catch((error) => {
-                        throw new Error(error);
+                        reject(error);
                     });
                 })
                 .catch((error) => {
+                    console.log("Error: ", error);
                     reject(error);
                 });
         });

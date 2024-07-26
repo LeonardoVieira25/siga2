@@ -106,8 +106,8 @@ async function authenticate(user: string, passwordHash: string): Promise<string 
         // headers['Cookie'] = `PHPSESSID=${phpSeed}`;
 
         // Perform the authentication request
-        await axios.post("https://sigam1.ufjf.br/index.php/siga/login/authenticate/?", data, { headers });
-
+        const response = await axios.post("https://sigam1.ufjf.br/index.php/siga/login/authenticate/?", data, { headers });
+        console.log(response);
         // return phpSeed;
     } catch (error) {
         console.error('Authentication failed:', error);
@@ -128,8 +128,13 @@ async function getDataPage(cpf: string, senhaHash: string) {
         console.log('error');
         await authenticate(cpf, senhaHash);
         console.log('authenticate');
-        response = await axios.get("https://sigam1.ufjf.br/index.php/siga/academico/acessoaluno/formNota")
+        response = await axios.get("https://sigam1.ufjf.br/index.php/siga/academico/acessoaluno/formNota").catch((error) => {
+            console.log('error');
+        console.log(error)
+        })
+
     }
+    console.log('response');
     // if (!estaLogado(responseText)) {
     //     await authenticate(cpf, senhaHash);
     // }
@@ -208,8 +213,8 @@ export async function generateHashMd5(input: string) {
 }
 export default async function GetData(cpf: string, senhaHash: string) {
 
-    console.log('scraper');
     return new Promise((resolve, reject) => {
+        console.log('scraper');
         // getDataPage(cpf, senhaHash).then((response) => {
         getDataPage(cpf, senhaHash).then((response) => {
             console.log('usuario logado');
